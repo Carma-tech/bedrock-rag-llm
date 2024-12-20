@@ -92,6 +92,7 @@ Screenshot showing how knowledge was ingested into Amazon Bedrock, including:
 ---
 
 ### Frontend Deployment
+
 1. Navigate to the frontend folder:
    ```bash
    cd frontend
@@ -100,13 +101,20 @@ Screenshot showing how knowledge was ingested into Amazon Bedrock, including:
    ```bash
    npm install
    ```
-3. Start the frontend application:
+3. You must copy the API gateway url that deployed in backend folder and paste that in `config.json` file to update the apiBaseUrl.
+   ```json
+   "apiBaseUrl": "https://co3rdniw8a.execute-api.us-east-1.amazonaws.com/prod/"
+   ```
+   Because the CDK can't pass the token value to outside of the file before deployment.
+
+4. Start the frontend application:
    ```bash
    npm start
    ```
-4. Open your browser at `http://localhost:3000`. The application will:
+5. Open your browser at `http://localhost:3000`. The application will:
    - Automatically load the API Gateway URL from `config.json`.
-5. Follow these steps in the UI:
+
+6. Follow these steps in the UI:
    1. Step 1: Verify that the API Gateway URL is pre-filled in "Input your base URL here."
    2. Step 2: Select a model (e.g., `Anthropic Claude Instant` or `Amazon Titan Text Premier`).
    3. Step 3: Enter a question (e.g., "What was Amazon's growth in 2022?") and view responses.

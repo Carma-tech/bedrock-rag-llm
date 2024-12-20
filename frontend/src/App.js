@@ -13,11 +13,12 @@ import IconButton from "@mui/material/IconButton";
 import SendIcon from "@mui/icons-material/Send";
 import UrlSourcesForm from "./WebUrlsForm";
 import {modelList} from "./RAGModels"
+import config from "./config.json";
 
 const App = (props) => {
   const [history, setHistory] = useState([]);
   const [selectedModel, setSelectedModel] = useState(undefined);
-  const [baseUrl, setBaseUrl] = useState(undefined);
+  const [baseUrl, setBaseUrl] = useState(config.apiBaseUrl);
   const [question, setQuestion] = useState('');
   const [spinner, setSpinner] = useState(false);
   const [sessionId, setSessionId] = useState(undefined);

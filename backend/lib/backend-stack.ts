@@ -22,6 +22,7 @@ import * as cr from "aws-cdk-lib/custom-resources";
 import * as events from "aws-cdk-lib/aws-events";
 import * as targets from "aws-cdk-lib/aws-events-targets";
 import { join } from "path";
+import * as fs from 'fs';
 
 export class BackendStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -264,81 +265,6 @@ export class BackendStack extends Stack {
       },
     });
 
-    /**
-     * Create and Associate ACL with Gateway
-     */
-    // Create an IPSet
-    // const allowedIpSet = new wafv2.CfnIPSet(this, "DevIpSet", {
-    //   addresses: whitelistedIps, // whitelisted IPs in CIDR format
-    //   ipAddressVersion: "IPV4",
-    //   scope: "REGIONAL",
-    //   description: "List of allowed IP addresses",
-    // });
-    // // Create our Web ACL
-    // const webACL = new wafv2.CfnWebACL(this, "WebACL", {
-    //   defaultAction: {
-    //     block: {},
-    //   },
-    //   scope: "REGIONAL",
-    //   visibilityConfig: {
-    //     cloudWatchMetricsEnabled: true,
-    //     metricName: "webACL",
-    //     sampledRequestsEnabled: true,
-    //   },
-    //   rules: [
-    //     {
-    //       name: "IPAllowList",
-    //       priority: 1,
-    //       statement: {
-    //         ipSetReferenceStatement: {
-    //           arn: allowedIpSet.attrArn,
-    //         },
-    //       },
-    //       action: {
-    //         allow: {},
-    //       },
-    //       visibilityConfig: {
-    //         sampledRequestsEnabled: true,
-    //         cloudWatchMetricsEnabled: true,
-    //         metricName: "IPAllowList",
-    //       },
-    //     },
-    //   ],
-    // });
-
-    // const webAclLogGroup = new logs.LogGroup(this, "awsWafLogs", {
-    //   logGroupName: `aws-waf-logs-backend`,
-    //   removalPolicy: RemovalPolicy.DESTROY,
-    // });
-
-    // // Create logging configuration with log group as destination
-    // new wafv2.CfnLoggingConfiguration(this, "WAFLoggingConfiguration", {
-    //   resourceArn: webACL.attrArn,
-    //   logDestinationConfigs: [
-    //     Stack.of(this).formatArn({
-    //       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    //       service: "logs",
-    //       resource: "log-group",
-    //       resourceName: webAclLogGroup.logGroupName,
-    //     }),
-    //   ],
-    // });
-
-    // // Associate with our gateway
-    // const webACLAssociation = new wafv2.CfnWebACLAssociation(
-    //   this,
-    //   "WebACLAssociation",
-    //   {
-    //     webAclArn: webACL.attrArn,
-    //     resourceArn: `arn:aws:apigateway:${Stack.of(this).region}::/restapis/${
-    //       apiGateway.restApiId
-    //     }/stages/${apiGateway.deploymentStage.stageName}`,
-    //   }
-    // );
-
-    // // make sure api gateway is deployed before web ACL association
-    // webACLAssociation.node.addDependency(apiGateway);
-
     //CfnOutput is used to log API Gateway URL and S3 bucket name to console
     new CfnOutput(this, "APIGatewayUrl", {
       value: apiGateway.url,
@@ -347,5 +273,13 @@ export class BackendStack extends Stack {
     new CfnOutput(this, "DocsBucketName", {
       value: docsBucket.bucketName,
     });
+
+    // Write API Gateway URL to a config.json file in the frontend folder
+    const frontendConfigPath = join(__dirname, '../../frontend/src/config.json');
+    fs.writeFileSync(
+      frontendConfigPath,
+      JSON.stringify({ apiBaseUrl: apiGateway.url }, null, 2),
+      { encoding: 'utf-8' }
+    );
   }
 }

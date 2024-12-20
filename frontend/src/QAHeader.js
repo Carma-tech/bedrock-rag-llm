@@ -11,11 +11,12 @@ import InputIcon from "@mui/icons-material/Input";
 import InputAdornment from "@mui/material/InputAdornment";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import PropTypes from "prop-types";
+import config from "./config.json";
 
 export const QAHeader = (props) => {
   const { setSelectedModel, setBaseUrl, modelList, selectedModel, baseUrl } =
     props;
-  const [url, setUrl] = useState(baseUrl ?? "");
+  const [url, setUrl] = useState(baseUrl || config.apiBaseUrl || "");
   const modelListDisabledText =
     "Input a valid base url to enable model selection";
 
@@ -38,9 +39,10 @@ export const QAHeader = (props) => {
         value={url}
         sx={{ width: "100%" }}
         name="Base Url"
-        onChange={(event) => setUrl(event.target?.value)}
+        // onChange={(event) => setUrl(event.target?.value)}
+        readOnly
         onKeyDown={handleKeyDown}
-        placeholder="https://example.execute-api.example.amazonaws.com/example/"
+        placeholder={config.apiBaseUrl || "https://example.execute-api.example.amazonaws.com/example/"}
         endAdornment={
           <InputAdornment position="end">
             <IconButton
